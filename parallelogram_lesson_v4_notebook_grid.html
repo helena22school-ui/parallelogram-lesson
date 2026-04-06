@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Паралелограм — інтерактивні вправи (з конспектом)</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#111a33;
+      --card2:#0f1730;
+      --text:#e9ecff;
+      --muted:#b8c0ff;
+      --accent:#ff2d2d;
+      --accent2:#7c4dff;
+      --ok:#24d18f;
+      --warn:#ffb020;
+      --grid:#1c2a55;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius2: 24px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(124,77,255,.25), transparent 60%),
+                  radial-gradient(900px 600px at 80% 30%, rgba(255,45,45,.18), transparent 55%),
+                  linear-gradient(180deg, #070a14, var(--bg));
+      color:var(--text);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:22px 16px 80px;}
+    header{
+      display:flex; gap:16px; align-items:center; justify-content:space-between;
+      padding:16px 16px; border:1px solid rgba(255,255,255,.08); background: rgba(17,26,51,.65);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      position: sticky; top: 10px; z-index: 10;
+    }
+    .brand{display:flex; flex-direction:column; gap:2px}
+    .brand h1{margin:0; font-size:18px; letter-spacing:.2px}
+    .brand small{color:var(--muted)}
+
+    .nav{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+    .pill{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(15,23,48,.55);
+      padding:8px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor:pointer;
+      user-select:none;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+    }
+    .pill:hover{transform: translateY(-1px); background: rgba(15,23,48,.85)}
+    .pill.active{border-color: rgba(255,45,45,.6); color: var(--text); background: rgba(255,45,45,.12)}
+
+    .progress{
+      height:8px; width:220px; border-radius:999px;
+      background: rgba(255,255,255,.10);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .bar{height:100%; width:0%; background: linear-gradient(90deg, var(--accent), var(--accent2));}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:16px;
+      margin-top:16px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .progress{width:160px}
+    }
+
+    .card{
+      border:1px solid rgba(255,255,255,.09);
+      background: linear-gradient(180deg, rgba(17,26,51,.92), rgba(15,23,48,.78));
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{padding:18px 18px 8px; display:flex; gap:12px; align-items:flex-start; justify-content:space-between;}
+    .kicker{color: var(--muted); font-size: 13px}
+    .title{font-size:22px; margin:6px 0 0; line-height:1.2}
+    .content{padding: 0 18px 18px;}
+
+    .side{display:flex; flex-direction:column; gap:16px;}
+    .mini{
+      border:1px solid rgba(255,255,255,.09);
+      background: rgba(17,26,51,.55);
+      border-radius: var(--radius2);
+      padding:14px;
+      box-shadow: var(--shadow);
+    }
+    .mini h3{margin:0 0 8px; font-size:14px}
+    .mini p{margin:0; color: var(--muted); font-size: 13px; line-height:1.5}
+
+    .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+    .btn{
+      border:none; border-radius: 14px; padding:10px 14px; cursor:pointer;
+      font-weight:600; color: var(--text);
+      background: linear-gradient(90deg, rgba(255,45,45,.95), rgba(124,77,255,.9));
+      box-shadow: 0 10px 20px rgba(255,45,45,.12);
+      transition: transform .08s ease, filter .2s ease;
+    }
+    .btn:hover{transform: translateY(-1px); filter: brightness(1.05)}
+    .btn.secondary{background: rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.16); box-shadow:none;}
+    .btn.ghost{background: transparent; border:1px dashed rgba(255,255,255,.22); box-shadow:none; color: var(--muted);}
+    .btn:disabled{opacity:.45; cursor:not-allowed; transform:none; filter:none;}
+
+    .note{margin-top:12px; padding:12px 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,.12);
+      background: rgba(15,23,48,.65); color: var(--muted); line-height:1.5; font-size: 14px;}
+    .note strong{color: var(--text)}
+    .note.ok{border-color: rgba(36,209,143,.45); background: rgba(36,209,143,.08)}
+    .note.warn{border-color: rgba(255,176,32,.45); background: rgba(255,176,32,.08)}
+
+    canvas{
+      width:100%; max-width: 860px; height: 410px; display:block;
+      background: linear-gradient(180deg, rgba(10,16,34,.8), rgba(8,12,26,.95));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+    }
+
+    .tabs{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .tab{padding:8px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.14);
+      background: rgba(15,23,48,.55); color: var(--muted); cursor:pointer; user-select:none}
+    .tab.active{border-color: rgba(255,45,45,.6); color: var(--text); background: rgba(255,45,45,.12)}
+
+    .row{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:10px}
+    @media (max-width: 820px){ .row{grid-template-columns:1fr} }
+    label{display:flex; flex-direction:column; gap:6px; font-size: 13px; color: var(--muted)}
+    input[type="number"], textarea{width:100%; background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+      border-radius: 14px; padding:10px 12px; color: var(--text); outline:none; font-size: 14px;}
+    textarea{min-height:110px; resize:vertical}
+
+    .badge{display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.10); background: rgba(15,23,48,.55);}
+    .dot{width:8px; height:8px; border-radius:999px; background: var(--ok)}
+
+    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px; padding:2px 6px; border-radius: 8px; border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06); color: var(--text);}
+
+    /* === Notebook (зошит у клітинку) === */
+    .notebook{
+      margin-top:14px;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        linear-gradient(0deg, rgba(15,23,48,.78), rgba(15,23,48,.78)),
+        repeating-linear-gradient(0deg, rgba(28,42,85,.35) 0, rgba(28,42,85,.35) 1px, transparent 1px, transparent 30px),
+        repeating-linear-gradient(90deg, rgba(28,42,85,.28) 0, rgba(28,42,85,.28) 1px, transparent 1px, transparent 30px);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      position: relative;
+    }
+    .notebook:before{
+      content:'';
+      position:absolute;
+      left:18px; top:0; bottom:0;
+      width:2px;
+      background: rgba(255,45,45,.35);
+      border-radius:2px;
+    }
+    .nb-top{
+      display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between;
+      padding-left: 14px; margin-bottom: 10px;
+      font-family: "Segoe Print","Segoe Script","Bradley Hand","Comic Sans MS",cursive;
+      color: rgba(233,236,255,.95);
+      font-size: 18px;
+    }
+    .nb-label{color: rgba(233,236,255,.8)}
+    .nb-fill{display:inline-block; padding: 2px 6px; border-radius: 10px; background: rgba(255,255,255,.06);
+      border: 1px dashed rgba(255,255,255,.20);}
+    .nb-block{margin-top:10px; padding: 10px 10px 10px 18px; border-radius: 16px; border:1px solid rgba(255,255,255,.10);
+      background: rgba(8,12,26,.35);}
+    .nb-h{font-family: ui-sans-serif, system-ui; font-size: 12px; text-transform: uppercase; letter-spacing: .12em;
+      color: rgba(184,192,255,.95); margin-bottom: 6px;}
+    .nb-text, .nb-list{font-family: "Segoe Print","Segoe Script","Bradley Hand","Comic Sans MS",cursive;
+      font-size: 18px; line-height: 1.35; color: rgba(233,236,255,.95);}
+    .nb-fig{border-radius: 14px; border:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03); padding: 10px;}
+    .nb-list{margin: 8px 0 0 0; padding-left: 20px;}
+    .nb-list li{margin: 6px 0}
+    .nb-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; padding-left: 6px;}
+
+    .footer{margin-top:26px; color: rgba(233,236,255,.75); font-size: 12px; text-align:center;}
+
+    @media print{
+      header, .side, .nav, .footer, .btnrow, .tabs, #practicePanel .btnrow{display:none !important;}
+      body{background:#fff !important; color:#000 !important;}
+      .wrap{max-width:none; padding:0;}
+      .card{box-shadow:none; border:none;}
+      .notebook{box-shadow:none;}
+      .nb-text, .nb-list, .nb-top{color:#000 !important;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1><span style="color:var(--accent)">Паралелограм</span> — інтерактивний урок</h1>
+        <small>Авторка: Олена Джежела • веб‑адаптація навчального матеріалу</small>
+      </div>
+      <div class="nav">
+        <div class="progress" aria-label="Прогрес уроку"><div class="bar" id="bar"></div></div>
+        <div class="pill active" data-step="1">1</div>
+        <div class="pill" data-step="2">2</div>
+        <div class="pill" data-step="3">3</div>
+        <div class="pill" data-step="4">4</div>
+        <div class="pill" data-step="5">5</div>
+        <div class="pill" data-step="6">6</div>
+        <div class="pill" data-step="7">7</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <main class="card">
+        <div class="hd">
+          <div>
+            <div class="kicker" id="kicker">Етап 1 з 7</div>
+            <h2 class="title" id="stageTitle">Паралелограм</h2>
+          </div>
+          <div class="badge" title="Стан">
+            <span class="dot" id="statusDot" style="background:var(--warn)"></span>
+            <span id="statusText">Готово</span>
+          </div>
+        </div>
+        <div class="content" id="stageBody"></div>
+      </main>
+
+      <aside class="side">
+        <div class="mini">
+          <h3>Порада для учня</h3>
+          <p id="tip">Натисни «Почати», щоб пройти урок крок за кроком.</p>
+        </div>
+        <div class="mini">
+          <h3>Керування</h3>
+          <p>Етап 2: <span class="kbd">клік</span> ставить точки, <span class="kbd">drag</span> задає зсув. Є режим «Самостійно за параметрами».</p>
+        </div>
+        <div class="mini">
+          <h3>Конспект</h3>
+          <p>На етапі 6 є «зошит у клітинку» з датою, темою, малюнком, правилом, ознаками і властивостями — для звірки.</p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">Автономний HTML • працює локально • без сторонніх бібліотек</div>
+  </div>
+
+<script>
+  // ====== Data ======
+  const STAGES = [
+    {
+      id: 1,
+      kicker: "Етап 1 з 7",
+      title: "Паралелограм",
+      tip: "Прочитай запитання і натисни «Почати».",
+      status: {dot: "var(--warn)", text: "Готово до старту"},
+      body: () => `
+        <div class="note"><strong>Паралелограм</strong> — це чотирикутник. Сьогодні ти навчишся <u>будувати</u> його та <u>доводити</u>, що фігура є паралелограмом.</div>
+        <div class="note warn"><strong>Запитання:</strong> Як довести, що певний чотирикутник — паралелограм?</div>
+        <div class="btnrow">
+          <button class="btn" id="startBtn">Почати</button>
+          <button class="btn secondary" id="jump2">Перейти до побудови</button>
+        </div>
+      `
+    },
+    {
+      id: 2,
+      kicker: "Етап 2 з 7",
+      title: "Побудова (візуальні кроки) + закріплення",
+      tip: "Побудуй послідовно: крапка → AB → зсув → паралельні сторони → з’єднання.",
+      status: {dot: "var(--warn)", text: "Побудуй фігуру"},
+      body: () => `
+        <div class="note"><strong>Як у презентації:</strong> «Першу точку відрізка треба змістити вниз, а потім вправо. З’єднай відрізки».</div>
+        <div class="tabs" role="tablist" aria-label="Режими">
+          <div class="tab active" id="tabGuided" role="tab" aria-selected="true">Кроки (інтерактивно)</div>
+          <div class="tab" id="tabPractice" role="tab" aria-selected="false">Самостійно за параметрами</div>
+        </div>
+
+        <div id="guidedPanel">
+          <canvas id="buildCanvas" width="900" height="450"></canvas>
+          <div class="note" id="buildHint">Крок 1/5: <strong>Клікни</strong> на сітці, щоб поставити точку <strong>A</strong>.</div>
+          <div class="btnrow">
+            <button class="btn secondary" id="undoBuild" disabled>Крок назад</button>
+            <button class="btn secondary" id="resetBuild">Скинути</button>
+            <button class="btn" id="autoDemo">Показати анімацію</button>
+            <button class="btn" id="nextFrom2" disabled>Далі →</button>
+          </div>
+          <div class="note ok" id="buildRule" style="display:none;">
+            <strong>Висновок:</strong> якщо протилежні сторони рівні — це <strong>паралелограм</strong>. Діагоналі — <strong>AC</strong> і <strong>BD</strong>.
+          </div>
+        </div>
+
+        <div id="practicePanel" style="display:none;">
+          <div class="note">Для закріплення: задай параметри (у клітинках), побудуй і натисни «Перевірити».</div>
+          <div class="row">
+            <label>Довжина AB (клітинок)
+              <input type="number" id="pAB" min="2" max="12" value="6" />
+            </label>
+            <label>Зсув вправо dx (клітинок)
+              <input type="number" id="pDX" min="1" max="10" value="4" />
+            </label>
+            <label>Зсув вниз dy (клітинок)
+              <input type="number" id="pDY" min="1" max="10" value="4" />
+            </label>
+          </div>
+          <canvas id="practiceCanvas" width="900" height="450"></canvas>
+          <div class="note" id="pHint"></div>
+          <div class="btnrow">
+            <button class="btn secondary" id="pReset">Скинути</button>
+            <button class="btn" id="pCheck">Перевірити</button>
+          </div>
+          <div class="note" id="pResult" style="display:none;"></div>
+          <div class="btnrow">
+            <button class="btn" id="backToGuided">Повернутись до кроків</button>
+          </div>
+        </div>
+      `
+    },
+    {
+      id: 3,
+      kicker: "Етап 3 з 7",
+      title: "Діагоналі та точка перетину",
+      tip: "Побудуй діагоналі й знайди точку O.",
+      status: {dot: "var(--warn)", text: "Побудуй діагоналі"},
+      body: () => `
+        <div class="note"><strong>Діагоналі AC і BD</strong> перетинаються в точці <strong>O</strong> та діляться навпіл.</div>
+        <canvas id="c2" width="900" height="420"></canvas>
+        <div class="btnrow">
+          <button class="btn" id="toggleDiag">Побудувати діагоналі</button>
+          <button class="btn secondary" id="shuffle">Інший паралелограм</button>
+          <button class="btn ghost" id="backTo2">← Назад</button>
+          <button class="btn" id="nextFrom3">Далі →</button>
+        </div>
+        <div class="note ok" id="s3rule" style="display:none;">Точка <strong>O</strong> — перетин діагоналей. Вона ділить їх навпіл: <strong>AO = OC</strong>, <strong>BO = OD</strong>.</div>
+      `
+    },
+    {
+      id: 4,
+      kicker: "Етап 4 з 7",
+      title: "Діагональ → 2 рівні трикутники",
+      tip: "Клікни по діагоналі, щоб побачити трикутники.",
+      status: {dot: "var(--warn)", text: "Досліди поділ"},
+      body: () => `
+        <div class="note"><strong>Діагональ ділить паралелограм</strong> на два рівних трикутники.</div>
+        <canvas id="c3" width="900" height="420"></canvas>
+        <div class="note" id="s4hint">Клацни поруч з діагоналлю <strong>AC</strong> або <strong>BD</strong>.</div>
+        <div class="note ok" id="s4rule" style="display:none;">Якщо діагональ чотирикутника ділить його на два рівні трикутники, то чотирикутник — <strong>паралелограм</strong>.</div>
+        <div class="btnrow">
+          <button class="btn secondary" id="clearSplit">Скинути</button>
+          <button class="btn ghost" id="backTo3">← Назад</button>
+          <button class="btn" id="nextFrom4">Далі →</button>
+        </div>
+      `
+    },
+    {
+      id: 5,
+      kicker: "Етап 5 з 7",
+      title: "Задача на доведення",
+      tip: "Спробуй сам(а), потім перевір себе.",
+      status: {dot: "var(--warn)", text: "Самостійна робота"},
+      body: () => `
+        <div class="note"><strong>Задача:</strong><br/>
+          <u>Дано:</u> <em>ABCD – чотирикутник</em>, <em>BD – діагональ</em>, <em>△ABD = △CBD</em>.<br/>
+          <strong><u>Доведи, що ABCD — паралелограм.</u></strong>
+        </div>
+        <label style="display:block; margin-top:10px; color:var(--muted)"><strong style="color:var(--text)">Твоє доведення (коротко):</strong>
+          <textarea id="proof" placeholder="Наприклад: діагональ BD ділить чотирикутник на два рівні трикутники, тому..."></textarea>
+        </label>
+        <div class="btnrow">
+          <button class="btn secondary" id="hintBtn">Підказка</button>
+          <button class="btn secondary" id="solBtn">Розв’язання</button>
+          <button class="btn" id="checkBtn">Перевірити ідею</button>
+          <button class="btn ghost" id="backTo4">← Назад</button>
+          <button class="btn" id="nextFrom5">Далі →</button>
+        </div>
+        <div class="note" id="hintBox" style="display:none;"><strong>Підказка:</strong> якщо діагональ ділить чотирикутник на два рівні трикутники — це ознака паралелограма.</div>
+        <div class="note ok" id="solBox" style="display:none;"><strong>Розв’язання:</strong> за умовою △ABD = △CBD, BD — діагональ ⇒ BD ділить чотирикутник на 2 рівні трикутники ⇒ ABCD — паралелограм.</div>
+        <div class="note" id="checkBox" style="display:none;"></div>
+      `
+    },
+    {
+      id: 6,
+      kicker: "Етап 6 з 7",
+      title: "Конспект у зошиті (звірка) + узагальнення",
+      tip: "Звір конспект і за потреби перепиши у зошит.",
+      status: {dot: "var(--ok)", text: "Конспект"},
+      body: () => `
+        <div class="note"><strong>Властивості паралелограма:</strong> протилежні сторони рівні; діагоналі перетинаються і діляться навпіл; будь-яка діагональ ділить на два рівні трикутники.</div>
+        <div class="note warn"><strong>Що має бути у твоєму зошиті:</strong> нижче — коротко, як у конспекті.</div>
+
+        <section class="notebook" aria-label="Конспект у зошиті">
+          <div class="nb-top">
+            <div><span class="nb-label">Дата відвідування:</span> <span class="nb-fill" id="nbDate">—</span></div>
+            <div><span class="nb-label">Тема:</span> <span class="nb-fill">Паралелограм</span></div>
+          </div>
+
+          <div class="nb-block">
+            <div class="nb-h">Малюнок</div>
+            <div class="nb-fig">
+              <svg viewBox="0 0 420 220" width="100%" height="200" aria-label="Паралелограм ABCD з діагоналями">
+                <defs>
+                  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                    <path d="M0,0 L9,3 L0,6 Z" fill="rgba(255,176,32,.95)"/>
+                  </marker>
+                </defs>
+                <path d="M90 60 L290 60 L340 170 L140 170 Z" fill="rgba(255,45,45,.06)" stroke="rgba(233,236,255,.7)" stroke-width="3"/>
+                <path d="M90 60 L340 170" stroke="rgba(36,209,143,.8)" stroke-width="2.5" stroke-dasharray="8 7"/>
+                <path d="M290 60 L140 170" stroke="rgba(36,209,143,.8)" stroke-width="2.5" stroke-dasharray="8 7"/>
+                <circle cx="215" cy="115" r="6" fill="rgba(36,209,143,.95)"/>
+                <text x="225" y="110" fill="rgba(36,209,143,.95)" font-size="16" font-weight="700">O</text>
+                <circle cx="90" cy="60" r="6" fill="rgba(233,236,255,.95)"/><text x="72" y="52" fill="rgba(233,236,255,.95)" font-size="16" font-weight="700">A</text>
+                <circle cx="290" cy="60" r="6" fill="rgba(233,236,255,.95)"/><text x="300" y="52" fill="rgba(233,236,255,.95)" font-size="16" font-weight="700">B</text>
+                <circle cx="340" cy="170" r="6" fill="rgba(233,236,255,.95)"/><text x="350" y="174" fill="rgba(233,236,255,.95)" font-size="16" font-weight="700">C</text>
+                <circle cx="140" cy="170" r="6" fill="rgba(233,236,255,.95)"/><text x="120" y="190" fill="rgba(233,236,255,.95)" font-size="16" font-weight="700">D</text>
+                <path d="M90 60 L140 170" stroke="rgba(255,176,32,.95)" stroke-width="2.5" marker-end="url(#arrow)"/>
+                <text x="150" y="150" fill="rgba(255,176,32,.95)" font-size="14" font-weight="700">зсув ↓ →</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="nb-block">
+            <div class="nb-h">Правило</div>
+            <div class="nb-text">Паралелограм — чотирикутник, у якого <strong>протилежні сторони рівні</strong> (і паралельні).</div>
+          </div>
+
+          <div class="nb-block">
+            <div class="nb-h">Ознаки</div>
+            <ul class="nb-list">
+              <li>Якщо <strong>протилежні сторони рівні</strong>, то чотирикутник — паралелограм.</li>
+              <li>Якщо <strong>діагональ</strong> ділить чотирикутник на <strong>два рівні трикутники</strong>, то це — паралелограм.</li>
+            </ul>
+          </div>
+
+          <div class="nb-block">
+            <div class="nb-h">Властивості</div>
+            <ul class="nb-list">
+              <li><strong>AB = CD</strong>, <strong>BC = AD</strong>.</li>
+              <li>Діагоналі <strong>AC</strong> і <strong>BD</strong> перетинаються в <strong>O</strong> та діляться навпіл: <strong>AO = OC</strong>, <strong>BO = OD</strong>.</li>
+              <li>Будь-яка діагональ ділить паралелограм на <strong>два рівні трикутники</strong>.</li>
+            </ul>
+          </div>
+
+          <div class="nb-actions">
+            <button class="btn secondary" id="nbCopy">Скопіювати конспект</button>
+            <button class="btn secondary" id="nbPrint">Роздрукувати</button>
+          </div>
+        </section>
+
+        <div class="btnrow">
+          <button class="btn ghost" id="backTo5">← Назад</button>
+          <button class="btn" id="nextFrom6">Перевір себе →</button>
+        </div>
+      `
+    },
+    {
+      id: 7,
+      kicker: "Етап 7 з 7",
+      title: "Перевір себе",
+      tip: "Обери фігуру‑паралелограм.",
+      status: {dot: "var(--warn)", text: "Фінальна перевірка"},
+      body: () => `
+        <div class="note"><strong>Яка з фігур — паралелограм?</strong></div>
+        <div id="figChoices" class="row" style="grid-template-columns: repeat(3, 1fr);"></div>
+        <div class="note" id="quizResult" style="display:none;"></div>
+        <div class="note" id="signBlock" style="display:none;">
+          <strong>Познач ознаки, які застосував(ла):</strong>
+          <div style="display:grid; gap:8px; margin-top:8px; color:var(--muted)">
+            <label style="flex-direction:row; align-items:center; gap:10px;"><input type="checkbox" class="sign"/> Протилежні сторони рівні</label>
+            <label style="flex-direction:row; align-items:center; gap:10px;"><input type="checkbox" class="sign"/> Діагоналі діляться навпіл</label>
+            <label style="flex-direction:row; align-items:center; gap:10px;"><input type="checkbox" class="sign"/> Діагональ → 2 рівні трикутники</label>
+          </div>
+          <div class="btnrow"><button class="btn" id="finishBtn">Завершити</button></div>
+        </div>
+        <div class="btnrow">
+          <button class="btn ghost" id="backTo6">← Назад</button>
+          <button class="btn secondary" id="restart">Почати спочатку</button>
+        </div>
+      `
+    },
+  ];
+
+  // ====== Navigation ======
+  const els = {
+    kicker: document.getElementById('kicker'),
+    title: document.getElementById('stageTitle'),
+    body: document.getElementById('stageBody'),
+    tip: document.getElementById('tip'),
+    bar: document.getElementById('bar'),
+    pills: () => [...document.querySelectorAll('.pill')],
+    statusDot: document.getElementById('statusDot'),
+    statusText: document.getElementById('statusText'),
+  };
+
+  let step = 1;
+  function setStatus(dotColor, text){ els.statusDot.style.background = dotColor; els.statusText.textContent = text; }
+
+  function render(){
+    const st = STAGES.find(s => s.id === step);
+    els.kicker.textContent = st.kicker;
+    els.title.innerHTML = st.title;
+    els.tip.textContent = st.tip;
+    setStatus(st.status.dot, st.status.text);
+    els.body.innerHTML = st.body();
+    els.bar.style.width = ((step-1)/(STAGES.length-1))*100 + '%';
+    els.pills().forEach(p => p.classList.toggle('active', Number(p.dataset.step) === step));
+
+    if(step===1) stage1();
+    if(step===2) stage2();
+    if(step===3) stage3();
+    if(step===4) stage4();
+    if(step===5) stage5();
+    if(step===6) stage6();
+    if(step===7) stage7();
+  }
+
+  function go(n){ step = Math.max(1, Math.min(STAGES.length, n)); render(); window.scrollTo({top:0, behavior:'smooth'}); }
+  document.querySelector('.nav').addEventListener('click', (e)=>{ const pill=e.target.closest('.pill'); if(pill) go(Number(pill.dataset.step)); });
+
+  // ===== Helpers =====
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  function dist(a,b){return Math.hypot(a.x-b.x, a.y-b.y)}
+  function snapToGrid(p, s=30){return {x: Math.round(p.x/s)*s, y: Math.round(p.y/s)*s}}
+  function drawGrid(ctx,w,h,step=30){
+    ctx.save(); ctx.strokeStyle='rgba(28,42,85,.85)'; ctx.lineWidth=1;
+    for(let x=0;x<=w;x+=step){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+    for(let y=0;y<=h;y+=step){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+    ctx.restore();
+  }
+  function drawPoint(ctx,p,color='rgba(233,236,255,.95)',r=8){
+    ctx.save(); ctx.fillStyle=color; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=2; ctx.stroke(); ctx.restore();
+  }
+  function label(ctx,p,t,color='rgba(233,236,255,.9)'){
+    ctx.save(); ctx.fillStyle=color; ctx.font='700 16px ui-sans-serif, system-ui';
+    ctx.fillText(t, p.x+10, p.y-10); ctx.restore();
+  }
+  function seg(ctx,a,b,color='rgba(233,236,255,.9)',w=4,dashed=false){
+    ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=w; if(dashed) ctx.setLineDash([8,8]);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); ctx.restore();
+  }
+  function arrow(ctx,a,b,color='rgba(255,176,32,.95)'){
+    seg(ctx,a,b,color,3,true);
+    const ang = Math.atan2(b.y-a.y, b.x-a.x);
+    const head=12;
+    ctx.save(); ctx.fillStyle=color;
+    ctx.beginPath();
+    ctx.moveTo(b.x, b.y);
+    ctx.lineTo(b.x - head*Math.cos(ang-0.5), b.y - head*Math.sin(ang-0.5));
+    ctx.lineTo(b.x - head*Math.cos(ang+0.5), b.y - head*Math.sin(ang+0.5));
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  function poly(ctx,pts,fill='rgba(255,45,45,.06)'){
+    ctx.save(); ctx.fillStyle=fill; ctx.strokeStyle='rgba(233,236,255,.55)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y);
+    ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+  function getPointer(canvas,e){
+    const r=canvas.getBoundingClientRect();
+    const sx=canvas.width/r.width, sy=canvas.height/r.height;
+    return {x:(e.clientX-r.left)*sx, y:(e.clientY-r.top)*sy};
+  }
+
+  // ===== Stage 1 =====
+  function stage1(){
+    document.getElementById('startBtn').addEventListener('click', ()=>go(2));
+    document.getElementById('jump2').addEventListener('click', ()=>go(2));
+  }
+
+  // ===== Stage 2 =====
+  function stage2(){
+    const tabGuided = document.getElementById('tabGuided');
+    const tabPractice = document.getElementById('tabPractice');
+    const guidedPanel = document.getElementById('guidedPanel');
+    const practicePanel = document.getElementById('practicePanel');
+
+    function setTab(which){
+      const guided = which==='guided';
+      tabGuided.classList.toggle('active', guided);
+      tabPractice.classList.toggle('active', !guided);
+      guidedPanel.style.display = guided ? 'block' : 'none';
+      practicePanel.style.display = guided ? 'none' : 'block';
+      tabGuided.setAttribute('aria-selected', guided?'true':'false');
+      tabPractice.setAttribute('aria-selected', guided?'false':'true');
+      if(guided) initGuided(); else initPractice();
+    }
+
+    tabGuided.addEventListener('click', ()=>setTab('guided'));
+    tabPractice.addEventListener('click', ()=>setTab('practice'));
+
+    document.getElementById('backToGuided').addEventListener('click', ()=>setTab('guided'));
+
+    // Guided
+    let gInit=false;
+    function initGuided(){
+      if(gInit) return; gInit=true;
+      const canvas = document.getElementById('buildCanvas');
+      const ctx = canvas.getContext('2d');
+      const hint = document.getElementById('buildHint');
+      const undoBtn = document.getElementById('undoBuild');
+      const resetBtn = document.getElementById('resetBuild');
+      const demoBtn = document.getElementById('autoDemo');
+      const nextBtn = document.getElementById('nextFrom2');
+      const ruleBox = document.getElementById('buildRule');
+      const GRID=30, W=canvas.width, H=canvas.height;
+
+      let s=0; // 0 A, 1 B, 2 drag shift for D, 3 reveal AD/BC, 4 connect CD
+      let A=null,B=null,C=null,D=null;
+      let showAD=false, showBC=false, showCD=false;
+      let dragging=false, hover=null;
+      const hist=[];
+
+      function save(){ hist.push({s,A,B,C,D,showAD,showBC,showCD, rule: ruleBox.style.display}); undoBtn.disabled = hist.length===0; }
+      function restore(st){ s=st.s; A=st.A; B=st.B; C=st.C; D=st.D; showAD=st.showAD; showBC=st.showBC; showCD=st.showCD; ruleBox.style.display=st.rule; updateUI(); draw(); }
+      function reset(){ s=0; A=B=C=D=null; showAD=showBC=showCD=false; dragging=false; hover=null; hist.length=0; ruleBox.style.display='none'; nextBtn.disabled=true; setStatus('var(--warn)','Побудуй фігуру'); updateUI(); draw(); }
+
+      function updateUI(){
+        const steps=[
+          'Крок 1/5: <strong>Клікни</strong> на сітці — постав <strong>A</strong>.',
+          'Крок 2/5: <strong>Клікни</strong> праворуч від A — постав <strong>B</strong> і проведи <strong>AB</strong>.',
+          'Крок 3/5: <strong>Натисни і потягни</strong> від A вниз і вправо — задай зсув і отримай <strong>D</strong>.',
+          'Крок 4/5: Клікай — спочатку проведемо <strong>AD</strong>, потім <strong>BC</strong>.',
+          'Крок 5/5: Клікни — з’єднаємо <strong>C</strong> і <strong>D</strong>.'
+        ];
+        hint.innerHTML = steps[s];
+      }
+
+      function computeC(){
+        if(!A||!B||!D) return;
+        const v={x:D.x-A.x, y:D.y-A.y};
+        C={x:B.x+v.x, y:B.y+v.y};
+      }
+
+      function draw(){
+        ctx.clearRect(0,0,W,H);
+        drawGrid(ctx,W,H,GRID);
+        if(A && s===1 && hover) seg(ctx,A,hover,'rgba(233,236,255,.35)',3,true);
+        if(A){ drawPoint(ctx,A); label(ctx,A,'A'); }
+        if(B){ drawPoint(ctx,B); label(ctx,B,'B'); seg(ctx,A,B,'rgba(124,77,255,.95)',4); }
+        if(A && (s>=2) && (D || (s===2 && hover))){ arrow(ctx,A, D||hover, 'rgba(255,176,32,.95)'); }
+        if(D){ drawPoint(ctx,D,'rgba(255,45,45,.95)',9); label(ctx,D,'D','rgba(255,45,45,.95)'); }
+        if(C){ drawPoint(ctx,C); label(ctx,C,'C'); }
+        if(A&&B&&C&&D){
+          poly(ctx,[A,B,C,D],'rgba(255,45,45,.05)');
+          if(showAD) seg(ctx,A,D,'rgba(255,45,45,.95)',4);
+          if(showBC) seg(ctx,B,C,'rgba(255,45,45,.95)',4);
+          if(showCD) seg(ctx,C,D,'rgba(124,77,255,.95)',4);
+        }
+        ctx.save(); ctx.fillStyle='rgba(233,236,255,.75)'; ctx.font='600 14px ui-sans-serif, system-ui';
+        ctx.fillText('Крокова побудова (як у зошиті в клітинку).', 18, 28);
+        ctx.restore();
+      }
+
+      function validShift(){
+        if(!A||!D) return false;
+        const v={x:D.x-A.x, y:D.y-A.y};
+        return v.x>=GRID && v.y>=GRID;
+      }
+
+      function maybeFinish(){
+        if(A&&B&&C&&D && showAD && showBC && showCD){
+          ruleBox.style.display='block';
+          nextBtn.disabled=false;
+          setStatus('var(--ok)','Побудовано');
+        }
+      }
+
+      canvas.addEventListener('pointermove', (e)=>{
+        const m=snapToGrid(getPointer(canvas,e),GRID);
+        hover={x: clamp(m.x, GRID, W-GRID), y: clamp(m.y, GRID, H-GRID)};
+        if(dragging && s===2){
+          D=hover; computeC();
+          setStatus(validShift()?'var(--warn)':'var(--warn)', validShift()?'Зсув задано':'Зсув має бути вниз і вправо');
+        }
+        draw();
+      });
+
+      canvas.addEventListener('pointerdown', (e)=>{
+        const m=snapToGrid(getPointer(canvas,e),GRID);
+        const pt={x: clamp(m.x, GRID, W-GRID), y: clamp(m.y, GRID, H-GRID)};
+        if(s===0){ save(); A=pt; s=1; updateUI(); draw(); return; }
+        if(s===1 && A){
+          if(pt.x <= A.x+GRID){ setStatus('var(--warn)','B став праворуч від A'); return; }
+          save(); B={x: pt.x, y:A.y}; s=2; setStatus('var(--warn)','Тепер задай зсув'); updateUI(); draw(); return;
+        }
+        if(s===2 && A){ save(); dragging=true; D=pt; computeC(); canvas.setPointerCapture(e.pointerId); draw(); return; }
+        if(s===3 && A&&B&&C&&D){
+          save();
+          if(!showAD){ showAD=true; }
+          else if(!showBC){ showBC=true; }
+          else { s=4; }
+          updateUI(); draw(); maybeFinish(); return;
+        }
+        if(s===4 && A&&B&&C&&D){ save(); showCD=true; draw(); maybeFinish(); return; }
+      });
+
+      canvas.addEventListener('pointerup', ()=>{
+        if(dragging && s===2){
+          dragging=false;
+          if(!validShift()){ setStatus('var(--warn)','Зсув має бути вниз і вправо'); return; }
+          computeC(); s=3; setStatus('var(--warn)','Проведи AD і BC'); updateUI(); draw();
+        }
+      });
+
+      undoBtn.addEventListener('click', ()=>{ const st=hist.pop(); if(st) restore(st); });
+      resetBtn.addEventListener('click', reset);
+
+      demoBtn.addEventListener('click', ()=>{
+        reset();
+        const A0=snapToGrid({x:240,y:150},GRID);
+        const B0=snapToGrid({x:510,y:150},GRID);
+        const D0=snapToGrid({x:330,y:300},GRID);
+        const seq=[
+          ()=>{A=A0; s=1; updateUI(); draw();},
+          ()=>{B={x:B0.x, y:A0.y}; s=2; updateUI(); draw();},
+          ()=>{D=D0; computeC(); s=3; updateUI(); draw();},
+          ()=>{showAD=true; draw();},
+          ()=>{showBC=true; s=4; updateUI(); draw();},
+          ()=>{showCD=true; draw(); maybeFinish();}
+        ];
+        let i=0; (function tick(){ if(i>=seq.length) return; seq[i++](); setTimeout(tick, 450); })();
+      });
+
+      nextBtn.addEventListener('click', ()=>go(3));
+      reset();
+    }
+
+    // Practice
+    let pInit=false;
+    function initPractice(){
+      if(pInit) return; pInit=true;
+      const canvas=document.getElementById('practiceCanvas');
+      const ctx=canvas.getContext('2d');
+      const W=canvas.width, H=canvas.height, GRID=30;
+      const pAB=document.getElementById('pAB');
+      const pDX=document.getElementById('pDX');
+      const pDY=document.getElementById('pDY');
+      const hint=document.getElementById('pHint');
+      const resetBtn=document.getElementById('pReset');
+      const checkBtn=document.getElementById('pCheck');
+      const resBox=document.getElementById('pResult');
+
+      let A=null,B=null,D=null,C=null; let phase=0;
+
+      function computeC(){
+        if(A&&B&&D){ const v={x:D.x-A.x, y:D.y-A.y}; C={x:B.x+v.x, y:B.y+v.y}; }
+      }
+
+      function draw(){
+        ctx.clearRect(0,0,W,H); drawGrid(ctx,W,H,GRID);
+        if(A){ drawPoint(ctx,A); label(ctx,A,'A'); }
+        if(B){ drawPoint(ctx,B); label(ctx,B,'B'); seg(ctx,A,B,'rgba(124,77,255,.95)',4); }
+        if(D){ drawPoint(ctx,D,'rgba(255,45,45,.95)',9); label(ctx,D,'D','rgba(255,45,45,.95)'); arrow(ctx,A,D,'rgba(255,176,32,.95)'); }
+        if(C){ drawPoint(ctx,C); label(ctx,C,'C'); }
+        if(A&&B&&C&&D){ poly(ctx,[A,B,C,D],'rgba(124,77,255,.05)'); seg(ctx,B,C,'rgba(255,45,45,.95)',4); seg(ctx,A,D,'rgba(255,45,45,.95)',4); seg(ctx,C,D,'rgba(124,77,255,.95)',4); }
+        ctx.save(); ctx.fillStyle='rgba(233,236,255,.75)'; ctx.font='600 14px ui-sans-serif, system-ui';
+        const msg = phase===0?'Клікни — A.': phase===1?'Клікни — B (довжина AB).': phase===2?'Клікни — D (dx,dy від A).':'Готово — перевір.';
+        ctx.fillText(msg, 18, 28); ctx.restore();
+      }
+
+      function reset(){ A=B=C=D=null; phase=0; resBox.style.display='none'; draw(); }
+      function updHint(){ hint.innerHTML = `Параметри: <strong>AB=${pAB.value}</strong> клітинок; зсув від A: <strong>dx=${pDX.value}</strong> вправо, <strong>dy=${pDY.value}</strong> вниз.`; }
+
+      canvas.addEventListener('click', (e)=>{
+        const m=snapToGrid(getPointer(canvas,e),GRID);
+        const pt={x: clamp(m.x, GRID, W-GRID), y: clamp(m.y, GRID, H-GRID)};
+        if(phase===0){ A=pt; phase=1; draw(); return; }
+        if(phase===1){ B={x: pt.x, y:A.y}; phase=2; draw(); return; }
+        if(phase===2){ D=pt; computeC(); phase=3; draw(); return; }
+      });
+
+      function cells(v){ return Math.round(v/GRID); }
+
+      checkBtn.addEventListener('click', ()=>{
+        resBox.style.display='block';
+        if(!(A&&B&&D&&C)){
+          resBox.className='note warn';
+          resBox.textContent='Побудова не завершена: потрібні точки A, B, D.';
+          return;
+        }
+        const ab=cells(B.x-A.x); const dx=cells(D.x-A.x); const dy=cells(D.y-A.y);
+        const needAB=Number(pAB.value); const needDX=Number(pDX.value); const needDY=Number(pDY.value);
+        if(ab===needAB && dx===needDX && dy===needDY){
+          resBox.className='note ok';
+          resBox.innerHTML=`<strong>Чудово!</strong> Збіг параметрів: AB=${ab}, dx=${dx}, dy=${dy}. Тепер зроби такий самий рисунок у зошиті.`;
+          setStatus('var(--ok)','Перевірено');
+        } else {
+          resBox.className='note warn';
+          resBox.innerHTML=`<strong>Є неточності.</strong><br/>Очікується: AB=${needAB}, dx=${needDX}, dy=${needDY}.<br/>У тебе: AB=${ab}, dx=${dx}, dy=${dy}.`;
+          setStatus('var(--warn)','Виправ');
+        }
+      });
+
+      [pAB,pDX,pDY].forEach(x=>x.addEventListener('input', updHint));
+      resetBtn.addEventListener('click', reset);
+      updHint(); reset();
+    }
+
+    setTab('guided');
+  }
+
+  // ===== Stage 3 =====
+  function stage3(){
+    const canvas=document.getElementById('c2');
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width, H=canvas.height, GRID=30;
+    let showDiag=false;
+
+    function gen(){
+      const A={x:210,y:140}, B={x:540,y:140};
+      const vx=(Math.floor(Math.random()*4)+2)*GRID;
+      const vy=(Math.floor(Math.random()*4)+3)*GRID;
+      const D={x:A.x+vx, y:A.y+vy};
+      const C={x:B.x+vx, y:B.y+vy};
+      return {A,B,C,D};
+    }
+    let P=gen();
+
+    function draw(){
+      ctx.clearRect(0,0,W,H); drawGrid(ctx,W,H,GRID);
+      poly(ctx,[P.A,P.B,P.C,P.D],'rgba(124,77,255,.06)');
+      seg(ctx,P.A,P.B,'rgba(124,77,255,.95)',4);
+      seg(ctx,P.B,P.C,'rgba(255,45,45,.95)',4);
+      seg(ctx,P.C,P.D,'rgba(124,77,255,.95)',4);
+      seg(ctx,P.D,P.A,'rgba(255,45,45,.95)',4);
+      [['A',P.A],['B',P.B],['C',P.C],['D',P.D]].forEach(([t,p])=>{drawPoint(ctx,p); label(ctx,p,t);});
+      if(showDiag){
+        seg(ctx,P.A,P.C,'rgba(36,209,143,.95)',3,true);
+        seg(ctx,P.B,P.D,'rgba(36,209,143,.95)',3,true);
+        const O={x:(P.A.x+P.C.x)/2, y:(P.A.y+P.C.y)/2};
+        drawPoint(ctx,O,'rgba(36,209,143,.95)',8); label(ctx,O,'O','rgba(36,209,143,.95)');
+      }
+    }
+
+    document.getElementById('toggleDiag').addEventListener('click', ()=>{
+      showDiag=!showDiag;
+      document.getElementById('s3rule').style.display = showDiag?'block':'none';
+      setStatus(showDiag?'var(--ok)':'var(--warn)', showDiag?'Діагоналі побудовано':'Побудуй діагоналі');
+      draw();
+    });
+    document.getElementById('shuffle').addEventListener('click', ()=>{P=gen(); draw();});
+    document.getElementById('backTo2').addEventListener('click', ()=>go(2));
+    document.getElementById('nextFrom3').addEventListener('click', ()=>go(4));
+    draw();
+  }
+
+  // ===== Stage 4 =====
+  function stage4(){
+    const canvas=document.getElementById('c3');
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width, H=canvas.height, GRID=30;
+
+    const A={x:220,y:140}, B={x:560,y:140}, D={x:340,y:320};
+    const C={x:B.x+(D.x-A.x), y:B.y+(D.y-A.y)};
+    let mode=null;
+
+    function fillTri(pts, fill){
+      ctx.save(); ctx.fillStyle=fill;
+      ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+      ctx.lineTo(pts[1].x,pts[1].y);
+      ctx.lineTo(pts[2].x,pts[2].y);
+      ctx.closePath(); ctx.fill(); ctx.restore();
+    }
+    function distToSeg(p,a,b){
+      const vx=b.x-a.x, vy=b.y-a.y;
+      const wx=p.x-a.x, wy=p.y-a.y;
+      const c1=vx*wx+vy*wy;
+      if(c1<=0) return dist(p,a);
+      const c2=vx*vx+vy*vy;
+      if(c2<=c1) return dist(p,b);
+      const t=c1/c2;
+      const proj={x:a.x+t*vx, y:a.y+t*vy};
+      return dist(p,proj);
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H); drawGrid(ctx,W,H,GRID);
+      poly(ctx,[A,B,C,D],'rgba(255,45,45,.05)');
+      seg(ctx,A,B,'rgba(124,77,255,.95)',4);
+      seg(ctx,B,C,'rgba(255,45,45,.95)',4);
+      seg(ctx,C,D,'rgba(124,77,255,.95)',4);
+      seg(ctx,D,A,'rgba(255,45,45,.95)',4);
+      seg(ctx,A,C,'rgba(36,209,143,.70)',3,true);
+      seg(ctx,B,D,'rgba(36,209,143,.70)',3,true);
+      if(mode==='AC'){ fillTri([A,B,C],'rgba(124,77,255,.18)'); fillTri([A,D,C],'rgba(255,45,45,.18)'); }
+      if(mode==='BD'){ fillTri([A,B,D],'rgba(124,77,255,.18)'); fillTri([C,B,D],'rgba(255,45,45,.18)'); }
+      [['A',A],['B',B],['C',C],['D',D]].forEach(([t,p])=>{drawPoint(ctx,p); label(ctx,p,t);});
+    }
+
+    canvas.addEventListener('click', (e)=>{
+      const m=getPointer(canvas,e);
+      const dAC=distToSeg(m,A,C);
+      const dBD=distToSeg(m,B,D);
+      const thr=12;
+      if(dAC<thr){ mode='AC'; document.getElementById('s4rule').style.display='block'; setStatus('var(--ok)','Підсвічено'); }
+      else if(dBD<thr){ mode='BD'; document.getElementById('s4rule').style.display='block'; setStatus('var(--ok)','Підсвічено'); }
+      draw();
+    });
+
+    document.getElementById('clearSplit').addEventListener('click', ()=>{mode=null; document.getElementById('s4rule').style.display='none'; setStatus('var(--warn)','Досліди поділ'); draw();});
+    document.getElementById('backTo3').addEventListener('click', ()=>go(3));
+    document.getElementById('nextFrom4').addEventListener('click', ()=>go(5));
+    draw();
+  }
+
+  // ===== Stage 5 =====
+  function stage5(){
+    const hintBtn=document.getElementById('hintBtn');
+    const solBtn=document.getElementById('solBtn');
+    const checkBtn=document.getElementById('checkBtn');
+    const hintBox=document.getElementById('hintBox');
+    const solBox=document.getElementById('solBox');
+    const checkBox=document.getElementById('checkBox');
+    const proof=document.getElementById('proof');
+
+    hintBtn.addEventListener('click', ()=>{hintBox.style.display = (hintBox.style.display==='none')?'block':'none';});
+    solBtn.addEventListener('click', ()=>{solBox.style.display = (solBox.style.display==='none')?'block':'none';});
+    checkBtn.addEventListener('click', ()=>{
+      const t=(proof.value||'').toLowerCase();
+      let score=0;
+      if(t.includes('діагон') && t.includes('трикут') && (t.includes('рівн')||t.includes('однаков'))) score+=2;
+      if(t.includes('паралелограм')) score+=1;
+      checkBox.style.display='block';
+      if(score>=3){ checkBox.className='note ok'; checkBox.innerHTML='<strong>Чудово!</strong> Є ключова ознака і висновок.'; setStatus('var(--ok)','Перевірено'); }
+      else if(score==2){ checkBox.className='note warn'; checkBox.innerHTML='<strong>Добре!</strong> Додай явний висновок «⇒ паралелограм».'; setStatus('var(--warn)','Уточни'); }
+      else { checkBox.className='note'; checkBox.innerHTML='<strong>Спробуй ще.</strong> Напиши про діагональ і два рівні трикутники.'; }
+    });
+
+    document.getElementById('backTo4').addEventListener('click', ()=>go(4));
+    document.getElementById('nextFrom5').addEventListener('click', ()=>go(6));
+  }
+
+  // ===== Stage 6 (Notebook) =====
+  function stage6(){
+    document.getElementById('backTo5').addEventListener('click', ()=>go(5));
+    document.getElementById('nextFrom6').addEventListener('click', ()=>go(7));
+
+    // date
+    const dEl=document.getElementById('nbDate');
+    if(dEl){
+      const now=new Date();
+      const fmt=new Intl.DateTimeFormat('uk-UA', {year:'numeric', month:'2-digit', day:'2-digit'});
+      dEl.textContent=fmt.format(now);
+    }
+
+    const copyBtn=document.getElementById('nbCopy');
+    const printBtn=document.getElementById('nbPrint');
+
+    if(copyBtn){
+      copyBtn.addEventListener('click', async ()=>{
+        const text=[
+          `Дата: ${dEl?dEl.textContent:''}`,
+          'Тема: Паралелограм',
+          '',
+          'Правило: Паралелограм — чотирикутник, у якого протилежні сторони рівні (і паралельні).',
+          '',
+          'Ознаки:',
+          '• Якщо протилежні сторони рівні, то чотирикутник — паралелограм.',
+          '• Якщо діагональ ділить чотирикутник на два рівні трикутники, то це — паралелограм.',
+          '',
+          'Властивості:',
+          '• AB = CD, BC = AD.',
+          '• AC і BD перетинаються в O та діляться навпіл: AO = OC, BO = OD.',
+          '• Будь-яка діагональ ділить паралелограм на два рівні трикутники.'
+        ].join('\n');
+        try{
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent='Скопійовано ✅';
+          setTimeout(()=>copyBtn.textContent='Скопіювати конспект', 1200);
+        }catch(e){
+          alert('Не вдалося скопіювати автоматично. Спробуй виділити текст вручну.');
+        }
+      });
+    }
+
+    if(printBtn){
+      printBtn.addEventListener('click', ()=>window.print());
+    }
+  }
+
+  // ===== Stage 7 =====
+  function stage7(){
+    const wrap=document.getElementById('figChoices');
+    const res=document.getElementById('quizResult');
+    const signBlock=document.getElementById('signBlock');
+
+    const figs=[
+      {k:'A', ok:false, name:'Фігура А', svg:`<svg viewBox="0 0 120 80" width="100%" height="70"><path d="M60 8 L96 36 L60 72 L24 36 Z" fill="rgba(124,77,255,.10)" stroke="rgba(233,236,255,.65)" stroke-width="3"/></svg>`},
+      {k:'B', ok:true, name:'Фігура Б', svg:`<svg viewBox="0 0 120 80" width="100%" height="70"><path d="M28 18 L92 18 L74 62 L10 62 Z" fill="rgba(255,45,45,.10)" stroke="rgba(233,236,255,.65)" stroke-width="3"/></svg>`},
+      {k:'C', ok:false, name:'Фігура В', svg:`<svg viewBox="0 0 120 80" width="100%" height="70"><path d="M28 18 L92 18 L104 62 L16 62 Z" fill="rgba(36,209,143,.10)" stroke="rgba(233,236,255,.65)" stroke-width="3"/></svg>`}
+    ];
+
+    wrap.innerHTML='';
+    figs.forEach(f=>{
+      const d=document.createElement('div');
+      d.className='mini'; d.style.cursor='pointer';
+      d.innerHTML=`<div style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><strong>${f.name}</strong></div>${f.svg}`;
+      d.addEventListener('click', ()=>{
+        res.style.display='block';
+        if(f.ok){
+          res.className='note ok';
+          res.innerHTML='<strong>Правильно!</strong> Це паралелограм.';
+          signBlock.style.display='block';
+          setStatus('var(--ok)','Готово');
+        }else{
+          res.className='note warn';
+          res.innerHTML='<strong>Спробуй ще.</strong> Паралелограм має дві пари протилежних сторін.';
+          signBlock.style.display='none';
+          setStatus('var(--warn)','Спробуй ще');
+        }
+      });
+      wrap.appendChild(d);
+    });
+
+    document.getElementById('finishBtn').addEventListener('click', ()=>{
+      res.style.display='block'; res.className='note ok'; res.innerHTML='<strong>Урок завершено!</strong> Молодець!';
+      signBlock.style.display='none';
+      setStatus('var(--ok)','Урок завершено');
+      els.bar.style.width='100%';
+    });
+
+    document.getElementById('restart').addEventListener('click', ()=>go(1));
+    document.getElementById('backTo6').addEventListener('click', ()=>go(6));
+  }
+
+  // init
+  render();
+</script>
+</body>
+</html>
